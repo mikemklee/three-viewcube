@@ -1,0 +1,19 @@
+{
+  "name": "three-viewcube",
+  "version": "1.0.0",
+  "description": "Controls for 3D orientation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leemun1/three-viewcube.git"
+  },
+  "author": "Mike Lee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leemun1/three-viewcube/issues"
+  },
+  "homepage": "https://github.com/leemun1/three-viewcube#readme"
+}
