@@ -16,7 +16,9 @@ function App() {
       const scene = new THREE.Scene();
 
       // init camera
-      const camera = new THREE.PerspectiveCamera(
+      let camera:
+        | THREE.PerspectiveCamera
+        | THREE.OrthographicCamera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.1,
@@ -47,6 +49,25 @@ function App() {
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
+
+      // resize handler
+      const onResize = () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        if (camera.type === 'PerspectiveCamera') {
+          // perspective
+          camera.aspect = window.innerWidth / window.innerHeight;
+        } else if (camera.type === 'OrthographicCamera') {
+          // orthographic
+          camera.left = -window.innerWidth / 2;
+          camera.right = window.innerWidth / 2;
+          camera.top = window.innerHeight / 2;
+          camera.bottom = -window.innerHeight / 2;
+        }
+        camera.updateProjectionMatrix();
+      };
+      window.addEventListener('resize', onResize);
+
       appElement.appendChild(renderer.domElement);
       animate();
     }
