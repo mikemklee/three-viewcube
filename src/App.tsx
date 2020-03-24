@@ -1,13 +1,23 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import './App.css';
+import './App.scss';
+import ControlBoard from './ControlBoard';
 
 const Stats = require('stats.js');
 
 function App() {
   const observed = useRef<HTMLDivElement>(null);
+  const objectRef = useRef<THREE.Object3D | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<
+    THREE.PerspectiveCamera | THREE.OrthographicCamera | null
+  >(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const statsRef = useRef<any>(null);
+  const callbackRef = useRef<Function>(() => console.log('hi'));
+  const [rotating, toggleRotating] = useState(false);
 
   // reference: https://gist.github.com/chrisrzhou
 
@@ -101,6 +111,7 @@ function App() {
         renderer.render(scene, camera);
         stats.end();
         requestAnimationFrame(animate);
+        callbackRef.current();
       }
 
       // resize handler
@@ -122,12 +133,44 @@ function App() {
       // attach rendering canvas to DOM
       appElement.appendChild(renderer.domElement);
 
+      // define default render callback
+      callbackRef.current = () => {};
+
       // trigger animation
       animate();
+
+      objectRef.current = containerObj as THREE.Object3D;
+      statsRef.current = stats;
+      sceneRef.current = scene;
+      cameraRef.current = camera;
+      rendererRef.current = renderer;
     }
   }, [observed]);
 
-  return <div className="App" ref={observed} />;
+  useEffect(() => {
+    if (rotating) {
+      // start rotating object
+      callbackRef.current = () => {
+        if (objectRef.current) {
+          objectRef.current.rotation.x += 0.01;
+          objectRef.current.rotation.y += 0.01;
+        }
+      };
+    } else {
+      // stop rotating object
+      callbackRef.current = () => {};
+    }
+  }, [rotating]);
+
+  return (
+    <div className="App" ref={observed}>
+      <ControlBoard
+        toggleRotation={() => {
+          toggleRotating(!rotating);
+        }}
+      />
+    </div>
+  );
 }
 
 export default App;
