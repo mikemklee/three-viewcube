@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import './App.css';
 
+const Stats = require('stats.js');
+
 function App() {
   const observed = useRef<HTMLDivElement>(null);
 
@@ -13,6 +15,10 @@ function App() {
     const appElement = observed.current;
 
     if (appElement) {
+      // stats setup
+      const stats = new Stats();
+      document.body.appendChild(stats.dom);
+
       // init renderer
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -89,9 +95,11 @@ function App() {
 
       mesh.position.set(vec3.x, vec3.y, vec3.z);
 
-      // set update function to transform the scene and view
+      // setup render loop
       function animate(): void {
+        stats.begin();
         renderer.render(scene, camera);
+        stats.end();
         requestAnimationFrame(animate);
       }
 
