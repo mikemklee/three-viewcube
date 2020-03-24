@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import './App.css';
 
@@ -12,8 +13,19 @@ function App() {
     const appElement = observed.current;
 
     if (appElement) {
-      // initi scene
+      // init renderer
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+      });
+      const bgColor = 0x263238 / 2;
+      renderer.setClearColor(bgColor, 1);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      // init scene
       const scene = new THREE.Scene();
+      const ambientLight = new THREE.AmbientLight(0x736f6e, 1.25);
+      scene.add(ambientLight);
 
       // init camera
       let camera:
@@ -22,30 +34,63 @@ function App() {
         75,
         window.innerWidth / window.innerHeight,
         0.1,
-        1000
+        50
       );
-      camera.position.z = 5;
+      camera.position.z = 40;
+      camera.far = 100;
+      camera.updateProjectionMatrix();
+      const pointLight = new THREE.PointLight(0xffffff, 0.25);
+      camera.add(pointLight);
 
-      // init soft white light
-      const light = new THREE.AmbientLight(0x404040);
-      scene.add(light);
+      scene.add(camera);
 
-      // init renderer
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      // init controls and raycaster stuff
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.screenSpacePanning = true;
+      controls.enableKeys = false;
 
-      // init cube
-      const geometry = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial({ color: 0xdddddd });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
+      // init geometry
+      const geomRadius = 1;
+      const tube = 0.4;
+      const tubularSegments = 400;
+      const radialSegments = 100;
 
-      //set update function to transform the scene and view
+      const containerObj = new THREE.Object3D();
+      const knotGeometry = new THREE.TorusKnotBufferGeometry(
+        geomRadius,
+        tube,
+        tubularSegments,
+        radialSegments
+      );
+      const material = new THREE.MeshPhongMaterial({ color: 0xe91e63 });
+      containerObj.scale.multiplyScalar(10);
+      scene.add(containerObj);
+
+      const mesh = new THREE.Mesh(knotGeometry, material);
+      mesh.rotation.x = Math.random() * 10;
+      mesh.rotation.y = Math.random() * 10;
+      containerObj.add(mesh);
+
+      // set mesh transforms
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const lerpAmt = (1 - 1) / (300 - 1);
+      const dist = lerp(0, 2, lerpAmt);
+      const scale = lerp(1, 0.2, lerpAmt);
+
+      mesh.scale.set(1, 1, 1).multiplyScalar(scale);
+
+      const vec3 = new THREE.Vector3(0, 1, 0);
+      vec3.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI * Math.random());
+      vec3.applyAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        2 * Math.PI * Math.random()
+      );
+      vec3.multiplyScalar(dist);
+
+      mesh.position.set(vec3.x, vec3.y, vec3.z);
+
+      // set update function to transform the scene and view
       function animate(): void {
-        // rotate the cube
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        // trigger animation
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -55,10 +100,8 @@ function App() {
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         if (camera.type === 'PerspectiveCamera') {
-          // perspective
           camera.aspect = window.innerWidth / window.innerHeight;
         } else if (camera.type === 'OrthographicCamera') {
-          // orthographic
           camera.left = -window.innerWidth / 2;
           camera.right = window.innerWidth / 2;
           camera.top = window.innerHeight / 2;
@@ -68,7 +111,10 @@ function App() {
       };
       window.addEventListener('resize', onResize);
 
+      // attach rendering canvas to DOM
       appElement.appendChild(renderer.domElement);
+
+      // trigger animation
       animate();
     }
   }, [observed]);
