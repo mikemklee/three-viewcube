@@ -9,9 +9,14 @@ import ControlBoard from '../ControlBoard/ControlBoard';
 const teapotPath = require('../../assets/meshes/teapot.stl');
 const Stats = require('stats.js');
 
+export type TOOL = 'pick' | '';
+
 const MESH_RGB = [233, 30, 99];
 
 function App() {
+  const statsRef = useRef<any>(null);
+
+  // General scene-related THREE refs
   const observed = useRef<HTMLDivElement>(null);
   const objectRef = useRef<THREE.Object3D | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -19,11 +24,13 @@ function App() {
     THREE.PerspectiveCamera | THREE.OrthographicCamera | null
   >(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const statsRef = useRef<any>(null);
   const callbackRef = useRef<Function>(() => console.log('hi'));
+  const controlsRef = useRef<OrbitControls | null>(null);
+  const raycasterRef = useRef<THREE.Raycaster | null>(null);
+
   const [rotating, toggleRotating] = useState(false);
-  const [currentTool, selectCurrentTool] = useState('');
+  const [currentTool, selectCurrentTool] = useState<TOOL>('');
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // reference: https://gist.github.com/chrisrzhou
 
@@ -44,6 +51,13 @@ function App() {
     objectRef.current = containerObj as THREE.Object3D;
   };
 
+  const onMouseMove = (event: MouseEvent) => {
+    setMousePos({
+      x: (event.clientX / window.innerWidth) * 2 - 1,
+      y: -(event.clientY / window.innerHeight) * 2 + 1,
+    });
+  };
+
   useEffect(() => {
     const appElement = observed.current;
 
@@ -60,6 +74,9 @@ function App() {
       renderer.setClearColor(bgColor, 1);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      // init raycaster
+      const raycaster = new THREE.Raycaster();
 
       // init scene
       const scene = new THREE.Scene();
@@ -159,8 +176,33 @@ function App() {
       cameraRef.current = camera;
       rendererRef.current = renderer;
       controlsRef.current = controls;
+      raycasterRef.current = raycaster;
+
+      // setup mouse event handlers
+      window.addEventListener('mousemove', onMouseMove);
     }
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+    };
   }, [observed]);
+
+  useEffect(() => {
+    if (currentTool === 'pick') {
+      if (raycasterRef.current && cameraRef.current && objectRef.current) {
+        raycasterRef.current.setFromCamera(mousePos, cameraRef.current);
+        const intersections = raycasterRef.current.intersectObject(
+          objectRef.current,
+          true
+        );
+
+        if (intersections.length > 0) {
+          // get the intersected face index
+          const intersection = intersections[0];
+          console.log('face index', intersection.faceIndex);
+        }
+      }
+    }
+  }, [mousePos, currentTool]);
 
   useEffect(() => {
     if (rotating) {

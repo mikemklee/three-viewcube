@@ -5,12 +5,13 @@ import { StyledControlBoard } from './ControlBoard.styles';
 import Button from '../Button/Button';
 
 import Images from '../../assets/images';
+import { TOOL } from '../App/App';
 
 type Props = {
   rotating: boolean;
-  currentTool: string;
+  currentTool: TOOL;
   toggleRotation: () => void;
-  selectCurrentTool: (tool: string) => void;
+  selectCurrentTool: (tool: TOOL) => void;
 };
 
 const ControlBoard = ({
