@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/leemun1/three-viewcube/issues"
   },
-  "homepage": "https://github.com/leemun1/three-viewcube#readme"
+  "homepage": "https://github.com/leemun1/three-viewcube#readme",
+  "dependencies": {}
 }
