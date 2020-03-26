@@ -15,9 +15,11 @@ function App() {
     THREE.PerspectiveCamera | THREE.OrthographicCamera | null
   >(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const statsRef = useRef<any>(null);
   const callbackRef = useRef<Function>(() => console.log('hi'));
   const [rotating, toggleRotating] = useState(false);
+  const [currentTool, selectCurrentTool] = useState('');
 
   // reference: https://gist.github.com/chrisrzhou
 
@@ -111,6 +113,7 @@ function App() {
         renderer.render(scene, camera);
         stats.end();
         requestAnimationFrame(animate);
+        controls.update();
         callbackRef.current();
       }
 
@@ -144,6 +147,7 @@ function App() {
       sceneRef.current = scene;
       cameraRef.current = camera;
       rendererRef.current = renderer;
+      controlsRef.current = controls;
     }
   }, [observed]);
 
@@ -164,7 +168,12 @@ function App() {
 
   return (
     <StyledApp ref={observed}>
-      <ControlBoard toggleRotation={() => toggleRotating(!rotating)} />
+      <ControlBoard
+        rotating={rotating}
+        currentTool={currentTool}
+        toggleRotation={() => toggleRotating(!rotating)}
+        selectCurrentTool={tool => selectCurrentTool(tool)}
+      />
     </StyledApp>
   );
 }
