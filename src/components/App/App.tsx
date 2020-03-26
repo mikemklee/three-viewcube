@@ -1,11 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 
 import { StyledApp } from './App.styles';
 import ControlBoard from '../ControlBoard/ControlBoard';
 
+const teapotPath = require('../../assets/meshes/teapot.stl');
 const Stats = require('stats.js');
+
+const MESH_RGB = [233, 30, 99];
 
 function App() {
   const observed = useRef<HTMLDivElement>(null);
@@ -22,6 +26,23 @@ function App() {
   const [currentTool, selectCurrentTool] = useState('');
 
   // reference: https://gist.github.com/chrisrzhou
+
+  const addMeshToScene = (
+    geometry: THREE.BufferGeometry,
+    scene: THREE.Scene
+  ) => {
+    const containerObj = new THREE.Object3D();
+    const material = new THREE.MeshPhongMaterial({
+      vertexColors: true,
+    });
+    scene.add(containerObj);
+
+    const mesh = new THREE.Mesh(geometry, material);
+    containerObj.add(mesh);
+    containerObj.scale.multiplyScalar(2);
+
+    objectRef.current = containerObj as THREE.Object3D;
+  };
 
   useEffect(() => {
     const appElement = observed.current;
@@ -68,44 +89,35 @@ function App() {
       controls.enableKeys = false;
 
       // init geometry
-      const geomRadius = 1;
-      const tube = 0.4;
-      const tubularSegments = 400;
-      const radialSegments = 100;
+      const loader = new STLLoader();
+      loader.load(teapotPath, geometry => {
+        if (!geometry) {
+          throw new Error('Unable to load geometry');
+        }
+        geometry.computeVertexNormals();
 
-      const containerObj = new THREE.Object3D();
-      const knotGeometry = new THREE.TorusKnotBufferGeometry(
-        geomRadius,
-        tube,
-        tubularSegments,
-        radialSegments
-      );
-      const material = new THREE.MeshPhongMaterial({ color: 0xe91e63 });
-      containerObj.scale.multiplyScalar(10);
-      scene.add(containerObj);
+        // setup color attributes on faces
+        const colorAttr = new THREE.BufferAttribute(
+          new Float32Array(geometry.attributes.position.count * 3),
+          3
+        );
+        const colorAttrLen = colorAttr.count / 3;
 
-      const mesh = new THREE.Mesh(knotGeometry, material);
-      mesh.rotation.x = Math.random() * 10;
-      mesh.rotation.y = Math.random() * 10;
-      containerObj.add(mesh);
+        // color the faces
+        const rFloat = MESH_RGB[0] / 255;
+        const gFloat = MESH_RGB[1] / 255;
+        const bFloat = MESH_RGB[2] / 255;
+        for (let i = 0; i < colorAttrLen; i++) {
+          colorAttr.setXYZ(i * 3 + 0, rFloat, gFloat, bFloat);
+          colorAttr.setXYZ(i * 3 + 1, rFloat, gFloat, bFloat);
+          colorAttr.setXYZ(i * 3 + 2, rFloat, gFloat, bFloat);
+        }
 
-      // set mesh transforms
-      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-      const lerpAmt = (1 - 1) / (300 - 1);
-      const dist = lerp(0, 2, lerpAmt);
-      const scale = lerp(1, 0.2, lerpAmt);
+        geometry.setAttribute('color', colorAttr);
+        (geometry.attributes.color as any).setUsage(THREE.DynamicDrawUsage);
 
-      mesh.scale.set(1, 1, 1).multiplyScalar(scale);
-
-      const vec3 = new THREE.Vector3(0, 1, 0);
-      vec3.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI * Math.random());
-      vec3.applyAxisAngle(
-        new THREE.Vector3(0, 1, 0),
-        2 * Math.PI * Math.random()
-      );
-      vec3.multiplyScalar(dist);
-
-      mesh.position.set(vec3.x, vec3.y, vec3.z);
+        addMeshToScene(geometry, scene);
+      });
 
       // setup render loop
       function animate(): void {
@@ -142,7 +154,6 @@ function App() {
       // trigger animation
       animate();
 
-      objectRef.current = containerObj as THREE.Object3D;
       statsRef.current = stats;
       sceneRef.current = scene;
       cameraRef.current = camera;
