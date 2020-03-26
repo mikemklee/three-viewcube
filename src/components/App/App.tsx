@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import './App.scss';
-import ControlBoard from './ControlBoard';
+import { StyledApp } from './App.styles';
+import ControlBoard from '../ControlBoard/ControlBoard';
 
 const Stats = require('stats.js');
 
@@ -163,13 +163,9 @@ function App() {
   }, [rotating]);
 
   return (
-    <div className="App" ref={observed}>
-      <ControlBoard
-        toggleRotation={() => {
-          toggleRotating(!rotating);
-        }}
-      />
-    </div>
+    <StyledApp ref={observed}>
+      <ControlBoard toggleRotation={() => toggleRotating(!rotating)} />
+    </StyledApp>
   );
 }
 
