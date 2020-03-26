@@ -5,12 +5,17 @@ import { StyledButton } from './Button.styles';
 type Props = {
   label: string;
   img: string;
+  toggled?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const Button = ({ label, img, onClick = () => {} }: Props) => {
+const Button = ({ label, img, toggled = false, onClick = () => {} }: Props) => {
+  const clickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick(event);
+  };
+
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton toggled={toggled} onClick={clickHandler}>
       <label>{label}</label>
       <img src={img} alt={label} />
     </StyledButton>

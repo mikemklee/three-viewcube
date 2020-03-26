@@ -1,28 +1,33 @@
 import styled from 'styled-components';
 
-export const StyledButton = styled.button`
+type StyledButtonProps = {
+  toggled: boolean;
+};
+
+export const StyledButton = styled.button<StyledButtonProps>`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 40px;
   height: 40px;
   background: #393c3c;
-  border: 2px solid #393c3c;
+  border: 2px solid ${props => (props.toggled ? '#ccc' : '#393c3c')};
   border-radius: 0.2rem;
   outline: none;
   cursor: pointer;
   font-size: 1.2rem;
   position: relative;
+  transition: border-color 0.2s;
 
   img {
-    filter: invert(0.5);
+    filter: invert(${props => (props.toggled ? 1 : 0.5)});
     width: 100%;
     transition: filter 0.2s;
   }
 
   label {
     visibility: hidden;
-    width: auto;
+    width: 100px;
     background-color: #393c3c;
     color: #fff;
     text-align: center;
