@@ -4,12 +4,17 @@ import 'normalize.css';
 
 import './index.css';
 
-import App from './components/App/App';
 import * as serviceWorker from './serviceWorker';
+
+import App from './components/App/App';
+import ViewCube from './components/ViewCube/ViewCube';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <>
+      <App />
+      <ViewCube />
+    </>
   </React.StrictMode>,
   document.getElementById('root')
 );
