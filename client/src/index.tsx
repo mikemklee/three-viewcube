@@ -13,7 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <>
       <App />
-      {/* <ViewCube /> */}
+      <ViewCube />
     </>
   </React.StrictMode>,
   document.getElementById('root')

@@ -2,9 +2,7 @@ import React from 'react';
 
 import { ViewCubeContainer } from './ViewCube.styles';
 
-type Props = {};
-
-const ViewCube = ({}: Props) => {
+const ViewCube = () => {
   return (
     <ViewCubeContainer>
       <div className='cube'>
