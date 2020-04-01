@@ -1,10 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import {
-  CSS3DRenderer,
-  CSS3DObject,
-} from 'three/examples/jsm/renderers/CSS3DRenderer';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 
 import { StyledApp } from './App.styles';
@@ -140,99 +136,48 @@ function App() {
         addMeshToScene(geometry, scene);
       });
 
-      const renderer2 = new CSS3DRenderer();
-      renderer2.setSize(150, 150);
-      renderer2.domElement.style.position = 'absolute';
-      renderer2.domElement.style.bottom = '50px';
-      renderer2.domElement.style.right = '50px';
-      renderer2.domElement.style.backgroundColor = 'pink';
+      function epsilon(value: number) {
+        return Math.abs(value) < 1e-10 ? 0 : value;
+      }
 
-      const scene2 = new THREE.Scene();
-      const camera2 = new THREE.OrthographicCamera(-10, 10, 10, -10);
+      function getCameraCSSMatrix(matrix: THREE.Matrix4) {
+        const { elements } = matrix;
 
-      scene2.add(camera2);
+        return `matrix3d(
+          ${epsilon(elements[0])},
+          ${epsilon(-elements[1])},
+          ${epsilon(elements[2])},
+          ${epsilon(elements[3])},
+          ${epsilon(elements[4])},
+          ${epsilon(-elements[5])},
+          ${epsilon(elements[6])},
+          ${epsilon(elements[7])},
+          ${epsilon(elements[8])},
+          ${epsilon(-elements[9])},
+          ${epsilon(elements[10])},
+          ${epsilon(elements[11])},
+          ${epsilon(elements[12])},
+          ${epsilon(-elements[13])},
+          ${epsilon(elements[14])},
+          ${epsilon(elements[15])})`;
+      }
 
-      let element;
-      let object;
-      const cube = new THREE.Group();
-
-      // TOP
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'yellowgreen';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(0, 0, 10));
-      cube.add(object);
-
-      // BOTTOM
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'seagreen';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(0, 0, 0));
-      cube.add(object);
-
-      // RIGHT
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'chocolate';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(5, 0, 5));
-      object.rotateY(Math.PI / 2);
-      cube.add(object);
-
-      // LEFT
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'cyan';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(-5, 0, 5));
-      object.rotateY(-(Math.PI / 2));
-      cube.add(object);
-
-      // FRONT
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'red';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(0, -5, 5));
-      object.rotateX(-(Math.PI / 2));
-      cube.add(object);
-
-      // BACK
-      element = document.createElement('div');
-      element.style.width = 10 + 'px';
-      element.style.height = 10 + 'px';
-      element.style.background = 'gold';
-      object = new CSS3DObject(element);
-      object.position.copy(new THREE.Vector3(0, 5, 5));
-      object.rotateX(Math.PI / 2);
-      cube.add(object);
-
-      scene2.add(cube);
-
-      const camera2Center = new THREE.Vector3(0, 0, 5);
-      const camera2Dir = new THREE.Vector3();
-      const camera2Pos = new THREE.Vector3();
+      let cube;
+      const mat = new THREE.Matrix4();
 
       // setup render loop
       function animate(): void {
-        camera.getWorldDirection(camera2Dir);
+        cube = document.querySelector('.cube') as HTMLDivElement;
 
-        camera2Pos
-          .copy(camera2Center)
-          .add(camera2Dir.clone().multiplyScalar(-1));
-        camera2.position.copy(camera2Pos);
-        camera2.lookAt(camera2Center);
+        if (cube && cameraRef.current) {
+          mat.extractRotation(cameraRef.current.matrixWorldInverse);
+          cube.style.transform = `translateZ(-300px) ${getCameraCSSMatrix(
+            mat
+          )}`;
+        }
 
         stats.begin();
         renderer.render(scene, camera);
-        renderer2.render(scene2, camera2);
         stats.end();
         requestAnimationFrame(animate);
         controls.update();
@@ -257,8 +202,6 @@ function App() {
 
       // attach rendering canvas to DOM
       appElement.appendChild(renderer.domElement);
-
-      appElement.appendChild(renderer2.domElement);
 
       // define default render callback
       callbackRef.current = () => {};
