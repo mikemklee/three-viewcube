@@ -2,9 +2,11 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import TWEEN from '@tweenjs/tween.js';
 
 import { StyledApp } from './App.styles';
 import ControlBoard from '../ControlBoard/ControlBoard';
+import ViewCube, { Orientation } from '../ViewCube/ViewCube';
 
 const teapotPath = require('../../assets/meshes/teapot.stl');
 const Stats = require('stats.js');
@@ -97,12 +99,13 @@ function App() {
       camera.updateProjectionMatrix();
       const pointLight = new THREE.PointLight(0xffffff, 0.25);
       camera.add(pointLight);
+      camera.up = new THREE.Vector3(0, 0, 1);
 
       scene.add(camera);
 
       // init controls and raycaster stuff
       const controls = new OrbitControls(camera, renderer.domElement);
-      controls.screenSpacePanning = true;
+      controls.enablePan = false;
       controls.enableKeys = false;
 
       // init geometry
@@ -112,6 +115,7 @@ function App() {
           throw new Error('Unable to load geometry');
         }
         geometry.computeVertexNormals();
+        geometry.center();
 
         // setup color attributes on faces
         const colorAttr = new THREE.BufferAttribute(
@@ -175,6 +179,8 @@ function App() {
             mat
           )}`;
         }
+
+        TWEEN.update();
 
         stats.begin();
         renderer.render(scene, camera);
@@ -242,6 +248,40 @@ function App() {
     }
   }, [mousePos, currentTool]);
 
+  const tweenCamera = (orientation: Orientation) => {
+    const { offsetFactor, axisAngle } = orientation;
+
+    if (cameraRef.current && objectRef.current) {
+      const offsetUnit = cameraRef.current.position.length();
+      const offset = new THREE.Vector3(
+        offsetUnit * offsetFactor.x,
+        offsetUnit * offsetFactor.y,
+        offsetUnit * offsetFactor.z
+      );
+
+      const center = new THREE.Vector3();
+      const finishPosition = center.add(offset);
+
+      const positionTween = new TWEEN.Tween(cameraRef.current.position)
+        .to(finishPosition, 300)
+        .easing(TWEEN.Easing.Cubic.InOut);
+
+      const euler = new THREE.Euler(axisAngle.x, axisAngle.y, axisAngle.z);
+
+      // rotate camera too!
+      const finishQuaternion = new THREE.Quaternion()
+        .copy(cameraRef.current.quaternion)
+        .setFromEuler(euler);
+
+      const quaternionTween = new TWEEN.Tween(cameraRef.current.quaternion)
+        .to(finishQuaternion, 300)
+        .easing(TWEEN.Easing.Cubic.InOut);
+
+      positionTween.start();
+      quaternionTween.start();
+    }
+  };
+
   useEffect(() => {
     if (rotating) {
       // start rotating object
@@ -259,6 +299,7 @@ function App() {
 
   return (
     <StyledApp ref={observed}>
+      <ViewCube tweenCamera={orientation => tweenCamera(orientation)} />
       <ControlBoard
         rotating={rotating}
         currentTool={currentTool}

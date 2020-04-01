@@ -7,14 +7,10 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 import App from './components/App/App';
-import ViewCube from './components/ViewCube/ViewCube';
 
 ReactDOM.render(
   <React.StrictMode>
-    <>
-      <App />
-      <ViewCube />
-    </>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
