@@ -6,8 +6,8 @@ export const ViewCubeContainer = styled.div`
   margin: 10px;
   perspective: 400px;
   position: absolute;
-  right: 10px;
-  bottom: 10px;
+  right: 20px;
+  bottom: 20px;
   z-index: 2;
 
   .cube {
@@ -16,24 +16,27 @@ export const ViewCubeContainer = styled.div`
     position: relative;
     transform-style: preserve-3d;
     transform: translateZ(-300px);
+    text-transform: uppercase;
   }
 
   .cube__face {
     position: absolute;
     width: 100px;
     height: 100px;
-    border: 2px solid grey;
+    border: 2px solid #7d7d7d;
     line-height: 100px;
     font-size: 20px;
     font-weight: bold;
-    color: black;
+    color: #7d7d7d;
     text-align: center;
-    background: whitesmoke;
-    transition: background 0.2s;
+    background: #393c3c;
+    transition: all 0.2s;
     cursor: pointer;
 
     &:hover {
-      background: green;
+      background: #7d7d7d;
+      border-color: #fff;
+      color: #fff;
     }
   }
 
