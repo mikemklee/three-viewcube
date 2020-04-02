@@ -21,6 +21,7 @@ function App() {
   // General scene-related THREE refs
   const observed = useRef<HTMLDivElement>(null);
   const objectRef = useRef<THREE.Object3D | null>(null);
+  const helperRef = useRef<THREE.Mesh | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<
     THREE.PerspectiveCamera | THREE.OrthographicCamera | null
@@ -62,6 +63,26 @@ function App() {
     cameraRef.current!.updateProjectionMatrix();
   };
 
+  const addTriangleHelperToScene = (scene: THREE.Scene) => {
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+
+    const vertices = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(vertices, 3)
+    );
+    (geometry.attributes.position as any).setUsage(THREE.DynamicDrawUsage);
+    const helper = new THREE.Mesh(geometry, material);
+
+    helperRef.current = helper as THREE.Mesh;
+
+    scene.add(helper);
+  };
+
   const onMouseMove = (event: MouseEvent) => {
     setMousePos({
       x: (event.clientX / window.innerWidth) * 2 - 1,
@@ -101,12 +122,14 @@ function App() {
         -window.innerHeight / 2
       );
 
+      camera.position.x = 20;
+      camera.position.y = -20;
       camera.position.z = 20;
-      // camera.far = 100;
+      camera.up = new THREE.Vector3(0, 0, 1);
       camera.updateProjectionMatrix();
+
       const pointLight = new THREE.PointLight(0xffffff, 0.25);
       camera.add(pointLight);
-      camera.up = new THREE.Vector3(0, 0, 1);
 
       scene.add(camera);
 
@@ -145,6 +168,9 @@ function App() {
         (geometry.attributes.color as any).setUsage(THREE.DynamicDrawUsage);
 
         addMeshToScene(geometry, scene);
+
+        addTriangleHelperToScene(scene);
+        console.log('Geometry Loaded', geometry);
       });
 
       function epsilon(value: number) {
@@ -233,8 +259,16 @@ function App() {
   }, [observed]);
 
   useEffect(() => {
+    const vertA = new THREE.Vector3();
+    const vertB = new THREE.Vector3();
+    const vertC = new THREE.Vector3();
     if (currentTool === 'pick') {
-      if (raycasterRef.current && cameraRef.current && objectRef.current) {
+      if (
+        raycasterRef.current &&
+        cameraRef.current &&
+        objectRef.current &&
+        helperRef.current
+      ) {
         raycasterRef.current.setFromCamera(mousePos, cameraRef.current);
         const intersections = raycasterRef.current.intersectObject(
           objectRef.current,
@@ -242,9 +276,37 @@ function App() {
         );
 
         if (intersections.length > 0) {
+          // show helper if got intersection
+          if (!helperRef.current.visible) helperRef.current.visible = true;
+
           // get the intersected face index
           const intersection = intersections[0];
-          console.log('face index', intersection.faceIndex);
+
+          const mesh = intersection.object as THREE.Mesh;
+          const faceIndex = intersection.faceIndex as number;
+
+          const positionAttr = (mesh.geometry as THREE.BufferGeometry)
+            .attributes.position as THREE.BufferAttribute;
+
+          vertA
+            .fromBufferAttribute(positionAttr, faceIndex * 3 + 0)
+            .applyMatrix4(mesh.matrixWorld);
+          vertB
+            .fromBufferAttribute(positionAttr, faceIndex * 3 + 1)
+            .applyMatrix4(mesh.matrixWorld);
+          vertC
+            .fromBufferAttribute(positionAttr, faceIndex * 3 + 2)
+            .applyMatrix4(mesh.matrixWorld);
+
+          // transform helper geometry to copy intersecting triangle's position and shape
+          helperRef.current.geometry.setFromPoints([vertA, vertB, vertC]);
+          const helperPositionAttr = (helperRef.current
+            .geometry as THREE.BufferGeometry).attributes
+            .position as THREE.BufferAttribute;
+          helperPositionAttr.needsUpdate = true;
+        } else {
+          // hide helper if no intersection
+          if (helperRef.current.visible) helperRef.current.visible = false;
         }
       }
     }
@@ -266,7 +328,7 @@ function App() {
 
       const positionTween = new TWEEN.Tween(cameraRef.current.position)
         .to(finishPosition, 300)
-        .easing(TWEEN.Easing.Cubic.InOut);
+        .easing(TWEEN.Easing.Circular.Out);
 
       const euler = new THREE.Euler(axisAngle.x, axisAngle.y, axisAngle.z);
 
@@ -277,7 +339,7 @@ function App() {
 
       const quaternionTween = new TWEEN.Tween(cameraRef.current.quaternion)
         .to(finishQuaternion, 300)
-        .easing(TWEEN.Easing.Cubic.InOut);
+        .easing(TWEEN.Easing.Circular.Out);
 
       positionTween.start();
       quaternionTween.start();
