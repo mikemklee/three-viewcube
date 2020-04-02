@@ -51,6 +51,15 @@ function App() {
     containerObj.scale.multiplyScalar(2);
 
     objectRef.current = containerObj as THREE.Object3D;
+
+    const box = new THREE.Box3().expandByObject(containerObj);
+
+    cameraRef.current!.zoom =
+      Math.min(
+        window.innerWidth / (box.max.x - box.min.x),
+        window.innerHeight / (box.max.y - box.min.y)
+      ) * 0.4;
+    cameraRef.current!.updateProjectionMatrix();
   };
 
   const onMouseMove = (event: MouseEvent) => {
@@ -85,17 +94,15 @@ function App() {
       const ambientLight = new THREE.AmbientLight(0x736f6e, 1.25);
       scene.add(ambientLight);
 
-      // init camera
-      let camera:
-        | THREE.PerspectiveCamera
-        | THREE.OrthographicCamera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        50
+      let camera = new THREE.OrthographicCamera(
+        -window.innerWidth / 2,
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        -window.innerHeight / 2
       );
-      camera.position.z = 40;
-      camera.far = 100;
+
+      camera.position.z = 20;
+      // camera.far = 100;
       camera.updateProjectionMatrix();
       const pointLight = new THREE.PointLight(0xffffff, 0.25);
       camera.add(pointLight);
@@ -193,15 +200,10 @@ function App() {
       // resize handler
       const onResize = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
-
-        if (camera.type === 'PerspectiveCamera') {
-          camera.aspect = window.innerWidth / window.innerHeight;
-        } else if (camera.type === 'OrthographicCamera') {
-          camera.left = -window.innerWidth / 2;
-          camera.right = window.innerWidth / 2;
-          camera.top = window.innerHeight / 2;
-          camera.bottom = -window.innerHeight / 2;
-        }
+        camera.left = -window.innerWidth / 2;
+        camera.right = window.innerWidth / 2;
+        camera.top = window.innerHeight / 2;
+        camera.bottom = -window.innerHeight / 2;
         camera.updateProjectionMatrix();
       };
       window.addEventListener('resize', onResize);
