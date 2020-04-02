@@ -37,14 +37,14 @@ const ControlBoard = ({
 
   return (
     <StyledControlBoard>
-      <Button
+      {/* <Button
         label="Toggle rotation"
         img={Images.rotate}
         toggled={rotating}
         onClick={onToggleRotate}
-      />
+      /> */}
       <Button
-        label="Pick a triangle"
+        label='Pick a triangle'
         img={Images.hand}
         toggled={currentTool === 'pick'}
         onClick={onClickPickTriangle}

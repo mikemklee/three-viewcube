@@ -32,6 +32,7 @@ export const ViewCubeContainer = styled.div`
     background: #393c3c;
     transition: all 0.2s;
     cursor: pointer;
+    user-select: none;
 
     &:hover {
       background: #7d7d7d;
