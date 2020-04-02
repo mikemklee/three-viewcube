@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.css"],"names":[],"mappings":"AAAA,KACE,eACF,CAEA,KACE,QACF,CAEA,MACE,YAAa,CACb,WAAY,CACZ,eACF","file":"main.878740f6.chunk.css","sourcesContent":["html {\n  overflow: hidden;\n}\n\nbody {\n  margin: 0;\n}\n\n#root {\n  height: 100vh;\n  width: 100vw;\n  overflow: hidden;\n}\n"]}

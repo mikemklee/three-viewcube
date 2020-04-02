@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.878740f6.chunk.css",
+    "main.js": "/static/js/main.d9d109b2.chunk.js",
+    "main.js.map": "/static/js/main.d9d109b2.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.cfae3202.js",
+    "runtime-main.js.map": "/static/js/runtime-main.cfae3202.js.map",
+    "static/css/2.764ccc25.chunk.css": "/static/css/2.764ccc25.chunk.css",
+    "static/js/2.91837577.chunk.js": "/static/js/2.91837577.chunk.js",
+    "static/js/2.91837577.chunk.js.map": "/static/js/2.91837577.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.bc9d8ab6d50929335c374b81bf9aeb3f.js": "/precache-manifest.bc9d8ab6d50929335c374b81bf9aeb3f.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.764ccc25.chunk.css.map": "/static/css/2.764ccc25.chunk.css.map",
+    "static/css/main.878740f6.chunk.css.map": "/static/css/main.878740f6.chunk.css.map",
+    "static/js/2.91837577.chunk.js.LICENSE.txt": "/static/js/2.91837577.chunk.js.LICENSE.txt",
+    "static/media/teapot.stl": "/static/media/teapot.7ad03674.stl"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.cfae3202.js",
+    "static/css/2.764ccc25.chunk.css",
+    "static/js/2.91837577.chunk.js",
+    "static/css/main.878740f6.chunk.css",
+    "static/js/main.d9d109b2.chunk.js"
+  ]
+}
