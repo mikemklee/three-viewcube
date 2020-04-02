@@ -1,26 +1,26 @@
 {
   "files": {
     "main.css": "/three-viewcube/static/css/main.878740f6.chunk.css",
-    "main.js": "/three-viewcube/static/js/main.a191ec91.chunk.js",
-    "main.js.map": "/three-viewcube/static/js/main.a191ec91.chunk.js.map",
-    "runtime-main.js": "/three-viewcube/static/js/runtime-main.e685fb34.js",
-    "runtime-main.js.map": "/three-viewcube/static/js/runtime-main.e685fb34.js.map",
+    "main.js": "/three-viewcube/static/js/main.2a7a7a61.chunk.js",
+    "main.js.map": "/three-viewcube/static/js/main.2a7a7a61.chunk.js.map",
+    "runtime-main.js": "/three-viewcube/static/js/runtime-main.27f90147.js",
+    "runtime-main.js.map": "/three-viewcube/static/js/runtime-main.27f90147.js.map",
     "static/css/2.764ccc25.chunk.css": "/three-viewcube/static/css/2.764ccc25.chunk.css",
-    "static/js/2.0c47b231.chunk.js": "/three-viewcube/static/js/2.0c47b231.chunk.js",
-    "static/js/2.0c47b231.chunk.js.map": "/three-viewcube/static/js/2.0c47b231.chunk.js.map",
+    "static/js/2.1423336d.chunk.js": "/three-viewcube/static/js/2.1423336d.chunk.js",
+    "static/js/2.1423336d.chunk.js.map": "/three-viewcube/static/js/2.1423336d.chunk.js.map",
     "index.html": "/three-viewcube/index.html",
-    "precache-manifest.401ea15be0547a8b8e7c6031d743a42a.js": "/three-viewcube/precache-manifest.401ea15be0547a8b8e7c6031d743a42a.js",
+    "precache-manifest.56de200577dc3dcdf2591851f72bab3c.js": "/three-viewcube/precache-manifest.56de200577dc3dcdf2591851f72bab3c.js",
     "service-worker.js": "/three-viewcube/service-worker.js",
     "static/css/2.764ccc25.chunk.css.map": "/three-viewcube/static/css/2.764ccc25.chunk.css.map",
     "static/css/main.878740f6.chunk.css.map": "/three-viewcube/static/css/main.878740f6.chunk.css.map",
-    "static/js/2.0c47b231.chunk.js.LICENSE.txt": "/three-viewcube/static/js/2.0c47b231.chunk.js.LICENSE.txt",
+    "static/js/2.1423336d.chunk.js.LICENSE.txt": "/three-viewcube/static/js/2.1423336d.chunk.js.LICENSE.txt",
     "static/media/teapot.stl": "/three-viewcube/static/media/teapot.7ad03674.stl"
   },
   "entrypoints": [
-    "static/js/runtime-main.e685fb34.js",
+    "static/js/runtime-main.27f90147.js",
     "static/css/2.764ccc25.chunk.css",
-    "static/js/2.0c47b231.chunk.js",
+    "static/js/2.1423336d.chunk.js",
     "static/css/main.878740f6.chunk.css",
-    "static/js/main.a191ec91.chunk.js"
+    "static/js/main.2a7a7a61.chunk.js"
   ]
 }
