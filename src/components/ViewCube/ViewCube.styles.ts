@@ -28,7 +28,7 @@ export const ViewCubeContainer = styled.div`
     height: 120px;
     border: 2px solid #7d7d7d;
     line-height: 100px;
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
     color: #7d7d7d;
     text-align: center;
