@@ -5,6 +5,7 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import TWEEN from '@tweenjs/tween.js';
 
 import { StyledApp } from './App.styles';
+import GithubLink from '../GithubLink/GithubLink';
 import ControlBoard from '../ControlBoard/ControlBoard';
 import ViewCube, { Orientation } from '../ViewCube/ViewCube';
 
@@ -363,6 +364,7 @@ function App() {
 
   return (
     <StyledApp ref={observed}>
+      <GithubLink />
       <ViewCube tweenCamera={(orientation) => tweenCamera(orientation)} />
       {/* <ControlBoard
         rotating={rotating}

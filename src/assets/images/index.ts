@@ -3,4 +3,5 @@ export default {
   hand: require('./hand.png'),
   mesh: require('./mesh.png'),
   rotate: require('./rotate.png'),
+  github: require('./github.png'),
 };
