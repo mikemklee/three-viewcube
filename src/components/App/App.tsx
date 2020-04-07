@@ -140,7 +140,7 @@ function App() {
 
       // init geometry
       const loader = new STLLoader();
-      loader.load(teapotPath, geometry => {
+      loader.load(teapotPath, (geometry) => {
         if (!geometry) {
           throw new Error('Unable to load geometry');
         }
@@ -363,13 +363,13 @@ function App() {
 
   return (
     <StyledApp ref={observed}>
-      <ViewCube tweenCamera={orientation => tweenCamera(orientation)} />
-      <ControlBoard
+      <ViewCube tweenCamera={(orientation) => tweenCamera(orientation)} />
+      {/* <ControlBoard
         rotating={rotating}
         currentTool={currentTool}
         toggleRotation={() => toggleRotating(!rotating)}
         selectCurrentTool={tool => selectCurrentTool(tool)}
-      />
+      /> */}
     </StyledApp>
   );
 }
