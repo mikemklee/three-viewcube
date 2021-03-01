@@ -31,7 +31,7 @@
     "react-scripts": "3.4.1",
     "stats.js": "^0.17.0",
     "styled-components": "^5.0.1",
-    "three": "^0.114.0",
+    "three": "^0.125.0",
     "typescript": "~3.7.2"
   },
   "scripts": {
