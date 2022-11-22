@@ -28,7 +28,7 @@
     "normalize.css": "^8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "stats.js": "^0.17.0",
     "styled-components": "^5.0.1",
     "three": "^0.137.0",
