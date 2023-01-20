@@ -5,7 +5,7 @@ import { StyledLink } from './GithubLink.styles';
 const GithubLink = () => {
   return (
     <StyledLink
-      href='https://github.com/leemun1/three-viewcube'
+      href='https://github.com/mikemklee/three-viewcube'
       target='__blank'
     />
   );
