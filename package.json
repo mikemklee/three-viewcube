@@ -1,17 +1,17 @@
 {
-  "homepage": "http://leemun1.github.io/three-viewcube",
+  "homepage": "http://mikemklee.github.io/three-viewcube",
   "description": "Controls for 3D orientation",
   "name": "three-viewcube",
   "version": "0.1.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leemun1/three-viewcube.git"
+    "url": "git+https://github.com/mikemklee/three-viewcube.git"
   },
   "author": "Mike Lee",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/leemun1/three-viewcube/issues"
+    "url": "https://github.com/mikemklee/three-viewcube/issues"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
