@@ -137,11 +137,10 @@ function App() {
       // init controls and raycaster stuff
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enablePan = false;
-      controls.enableKeys = false;
 
       // init geometry
       const loader = new STLLoader();
-      loader.load(teapotPath, (geometry) => {
+      loader.load(teapotPath, (geometry: any) => {
         if (!geometry) {
           throw new Error('Unable to load geometry');
         }
