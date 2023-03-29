@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import TWEEN from "@tweenjs/tween.js";
 
 export type Orientation = {
   offsetFactor: {
@@ -150,6 +151,10 @@ class ViewCubeController {
       positionTween.start();
       quaternionTween.start();
     }
+  }
+
+  tweenCallback() {
+    TWEEN.update();
   }
 }
 

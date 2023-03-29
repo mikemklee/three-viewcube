@@ -1,10 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
-import TWEEN from "@tweenjs/tween.js";
 
-import ViewCubeController, { Orientation } from "../../lib";
+import ViewCubeController from "../../lib";
 
 import { StyledApp, ViewCubeContainer } from "./App.styles";
 import GithubLink from "../GithubLink/GithubLink";
@@ -13,6 +12,32 @@ const teapotPath = require("../../assets/meshes/teapot.stl");
 const Stats = require("stats.js");
 
 const MESH_RGB = [233, 30, 99];
+
+function epsilon(value: number) {
+  return Math.abs(value) < 1e-10 ? 0 : value;
+}
+
+function getCameraCSSMatrix(matrix: THREE.Matrix4) {
+  const { elements } = matrix;
+
+  return `matrix3d(
+    ${epsilon(elements[0])},
+    ${epsilon(-elements[1])},
+    ${epsilon(elements[2])},
+    ${epsilon(elements[3])},
+    ${epsilon(elements[4])},
+    ${epsilon(-elements[5])},
+    ${epsilon(elements[6])},
+    ${epsilon(elements[7])},
+    ${epsilon(elements[8])},
+    ${epsilon(-elements[9])},
+    ${epsilon(elements[10])},
+    ${epsilon(elements[11])},
+    ${epsilon(elements[12])},
+    ${epsilon(-elements[13])},
+    ${epsilon(elements[14])},
+    ${epsilon(elements[15])})`;
+}
 
 function App() {
   const statsRef = useRef<any>(null);
@@ -26,8 +51,7 @@ function App() {
   >(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
-
-  // reference: https://gist.github.com/chrisrzhou
+  const viewCubeControllerRef = useRef<ViewCubeController>();
 
   const addMeshToScene = (
     geometry: THREE.BufferGeometry,
@@ -53,6 +77,11 @@ function App() {
         window.innerHeight / (box.max.y - box.min.y)
       ) * 0.4;
     cameraRef.current!.updateProjectionMatrix();
+
+    viewCubeControllerRef.current = new ViewCubeController(
+      cameraRef.current!,
+      objectRef.current
+    );
   };
 
   useEffect(() => {
@@ -133,32 +162,6 @@ function App() {
         console.log("Geometry Loaded", geometry);
       });
 
-      function epsilon(value: number) {
-        return Math.abs(value) < 1e-10 ? 0 : value;
-      }
-
-      function getCameraCSSMatrix(matrix: THREE.Matrix4) {
-        const { elements } = matrix;
-
-        return `matrix3d(
-          ${epsilon(elements[0])},
-          ${epsilon(-elements[1])},
-          ${epsilon(elements[2])},
-          ${epsilon(elements[3])},
-          ${epsilon(elements[4])},
-          ${epsilon(-elements[5])},
-          ${epsilon(elements[6])},
-          ${epsilon(elements[7])},
-          ${epsilon(elements[8])},
-          ${epsilon(-elements[9])},
-          ${epsilon(elements[10])},
-          ${epsilon(elements[11])},
-          ${epsilon(elements[12])},
-          ${epsilon(-elements[13])},
-          ${epsilon(elements[14])},
-          ${epsilon(elements[15])})`;
-      }
-
       let cube;
       const mat = new THREE.Matrix4();
 
@@ -173,7 +176,9 @@ function App() {
           )}`;
         }
 
-        TWEEN.update();
+        if (viewCubeControllerRef.current) {
+          viewCubeControllerRef.current.tweenCallback();
+        }
 
         stats.begin();
         renderer.render(scene, camera);
@@ -206,51 +211,6 @@ function App() {
       controlsRef.current = controls;
     }
   }, [observed]);
-
-  const tweenCamera = (orientation: Orientation) => {
-    const { offsetFactor, axisAngle } = orientation;
-
-    if (cameraRef.current && objectRef.current) {
-      const offsetUnit = cameraRef.current.position.length();
-      const offset = new THREE.Vector3(
-        offsetUnit * offsetFactor.x,
-        offsetUnit * offsetFactor.y,
-        offsetUnit * offsetFactor.z
-      );
-
-      const center = new THREE.Vector3();
-      const finishPosition = center.add(offset);
-
-      const positionTween = new TWEEN.Tween(cameraRef.current.position)
-        .to(finishPosition, 300)
-        .easing(TWEEN.Easing.Circular.Out);
-
-      const euler = new THREE.Euler(axisAngle.x, axisAngle.y, axisAngle.z);
-
-      // rotate camera too!
-      const finishQuaternion = new THREE.Quaternion()
-        .copy(cameraRef.current.quaternion)
-        .setFromEuler(euler);
-
-      const quaternionTween = new TWEEN.Tween(cameraRef.current.quaternion)
-        .to(finishQuaternion, 300)
-        .easing(TWEEN.Easing.Circular.Out);
-
-      positionTween.start();
-      quaternionTween.start();
-    }
-  };
-
-  const viewCubeControllerRef = useRef<ViewCubeController>();
-
-  useEffect(() => {
-    if (cameraRef.current && objectRef.current) {
-      viewCubeControllerRef.current = new ViewCubeController(
-        cameraRef.current,
-        objectRef.current
-      );
-    }
-  }, [cameraRef, objectRef]);
 
   return (
     <StyledApp ref={observed}>
