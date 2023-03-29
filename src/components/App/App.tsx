@@ -1,18 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-import TWEEN from '@tweenjs/tween.js';
+import React, { useRef, useEffect, useState } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
+import TWEEN from "@tweenjs/tween.js";
 
-import { StyledApp } from './App.styles';
-import GithubLink from '../GithubLink/GithubLink';
-import ControlBoard from '../ControlBoard/ControlBoard';
-import ViewCube, { Orientation } from '../ViewCube/ViewCube';
+import ViewCubeController, { Orientation } from "../../lib";
 
-const teapotPath = require('../../assets/meshes/teapot.stl');
-const Stats = require('stats.js');
+import { StyledApp, ViewCubeContainer } from "./App.styles";
+import GithubLink from "../GithubLink/GithubLink";
 
-export type TOOL = 'pick' | '';
+const teapotPath = require("../../assets/meshes/teapot.stl");
+const Stats = require("stats.js");
+
+export type TOOL = "pick" | "";
 
 const MESH_RGB = [233, 30, 99];
 
@@ -28,12 +28,12 @@ function App() {
     THREE.PerspectiveCamera | THREE.OrthographicCamera | null
   >(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const callbackRef = useRef<Function>(() => console.log('hi'));
+  const callbackRef = useRef<Function>(() => console.log("hi"));
   const controlsRef = useRef<OrbitControls | null>(null);
   const raycasterRef = useRef<THREE.Raycaster | null>(null);
 
   const [rotating, toggleRotating] = useState(false);
-  const [currentTool, selectCurrentTool] = useState<TOOL>('');
+  const [currentTool, selectCurrentTool] = useState<TOOL>("");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // reference: https://gist.github.com/chrisrzhou
@@ -73,7 +73,7 @@ function App() {
     const vertices = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute(
-      'position',
+      "position",
       new THREE.Float32BufferAttribute(vertices, 3)
     );
     (geometry.attributes.position as any).setUsage(THREE.DynamicDrawUsage);
@@ -142,7 +142,7 @@ function App() {
       const loader = new STLLoader();
       loader.load(teapotPath, (geometry: any) => {
         if (!geometry) {
-          throw new Error('Unable to load geometry');
+          throw new Error("Unable to load geometry");
         }
         geometry.computeVertexNormals();
         geometry.center();
@@ -164,13 +164,13 @@ function App() {
           colorAttr.setXYZ(i * 3 + 2, rFloat, gFloat, bFloat);
         }
 
-        geometry.setAttribute('color', colorAttr);
+        geometry.setAttribute("color", colorAttr);
         (geometry.attributes.color as any).setUsage(THREE.DynamicDrawUsage);
 
         addMeshToScene(geometry, scene);
 
         addTriangleHelperToScene(scene);
-        console.log('Geometry Loaded', geometry);
+        console.log("Geometry Loaded", geometry);
       });
 
       function epsilon(value: number) {
@@ -204,7 +204,7 @@ function App() {
 
       // setup render loop
       function animate(): void {
-        cube = document.querySelector('.cube') as HTMLDivElement;
+        cube = document.querySelector(".cube") as HTMLDivElement;
 
         if (cube && cameraRef.current) {
           mat.extractRotation(cameraRef.current.matrixWorldInverse);
@@ -232,7 +232,7 @@ function App() {
         camera.bottom = -window.innerHeight / 2;
         camera.updateProjectionMatrix();
       };
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
 
       // attach rendering canvas to DOM
       appElement.appendChild(renderer.domElement);
@@ -251,10 +251,10 @@ function App() {
       raycasterRef.current = raycaster;
 
       // setup mouse event handlers
-      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener("mousemove", onMouseMove);
     }
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [observed]);
 
@@ -262,7 +262,7 @@ function App() {
     const vertA = new THREE.Vector3();
     const vertB = new THREE.Vector3();
     const vertC = new THREE.Vector3();
-    if (currentTool === 'pick') {
+    if (currentTool === "pick") {
       if (
         raycasterRef.current &&
         cameraRef.current &&
@@ -300,9 +300,9 @@ function App() {
 
           // transform helper geometry to copy intersecting triangle's position and shape
           helperRef.current.geometry.setFromPoints([vertA, vertB, vertC]);
-          const helperPositionAttr = (helperRef.current
-            .geometry as THREE.BufferGeometry).attributes
-            .position as THREE.BufferAttribute;
+          const helperPositionAttr = (
+            helperRef.current.geometry as THREE.BufferGeometry
+          ).attributes.position as THREE.BufferAttribute;
           helperPositionAttr.needsUpdate = true;
         } else {
           // hide helper if no intersection
@@ -361,16 +361,39 @@ function App() {
     }
   }, [rotating]);
 
+  const viewCubeControllerRef = useRef<ViewCubeController>();
+
+  useEffect(() => {
+    if (cameraRef.current && objectRef.current) {
+      viewCubeControllerRef.current = new ViewCubeController(
+        cameraRef.current,
+        objectRef.current
+      );
+    }
+  }, [cameraRef, objectRef]);
+
   return (
     <StyledApp ref={observed}>
       <GithubLink />
-      <ViewCube tweenCamera={(orientation) => tweenCamera(orientation)} />
-      {/* <ControlBoard
-        rotating={rotating}
-        currentTool={currentTool}
-        toggleRotation={() => toggleRotating(!rotating)}
-        selectCurrentTool={tool => selectCurrentTool(tool)}
-      /> */}
+      <ViewCubeContainer>
+        <div className="cube">
+          {Object.values(ViewCubeController.CubeOrientation).map(
+            (orientation) => (
+              <div
+                key={orientation}
+                className={`cube__face cube__face--${orientation}`}
+                onClick={() =>
+                  viewCubeControllerRef.current!.tweenCamera(
+                    ViewCubeController.ORIENTATIONS[orientation]
+                  )
+                }
+              >
+                {orientation}
+              </div>
+            )
+          )}
+        </div>
+      </ViewCubeContainer>
     </StyledApp>
   );
 }
