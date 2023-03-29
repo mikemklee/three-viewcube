@@ -12,8 +12,6 @@ import GithubLink from "../GithubLink/GithubLink";
 const teapotPath = require("../../assets/meshes/teapot.stl");
 const Stats = require("stats.js");
 
-export type TOOL = "pick" | "";
-
 const MESH_RGB = [233, 30, 99];
 
 function App() {
@@ -22,19 +20,12 @@ function App() {
   // General scene-related THREE refs
   const observed = useRef<HTMLDivElement>(null);
   const objectRef = useRef<THREE.Object3D | null>(null);
-  const helperRef = useRef<THREE.Mesh | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<
     THREE.PerspectiveCamera | THREE.OrthographicCamera | null
   >(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const callbackRef = useRef<Function>(() => console.log("hi"));
   const controlsRef = useRef<OrbitControls | null>(null);
-  const raycasterRef = useRef<THREE.Raycaster | null>(null);
-
-  const [rotating, toggleRotating] = useState(false);
-  const [currentTool, selectCurrentTool] = useState<TOOL>("");
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // reference: https://gist.github.com/chrisrzhou
 
@@ -64,33 +55,6 @@ function App() {
     cameraRef.current!.updateProjectionMatrix();
   };
 
-  const addTriangleHelperToScene = (scene: THREE.Scene) => {
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-
-    const vertices = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(vertices, 3)
-    );
-    (geometry.attributes.position as any).setUsage(THREE.DynamicDrawUsage);
-    const helper = new THREE.Mesh(geometry, material);
-
-    helperRef.current = helper as THREE.Mesh;
-
-    scene.add(helper);
-  };
-
-  const onMouseMove = (event: MouseEvent) => {
-    setMousePos({
-      x: (event.clientX / window.innerWidth) * 2 - 1,
-      y: -(event.clientY / window.innerHeight) * 2 + 1,
-    });
-  };
-
   useEffect(() => {
     const appElement = observed.current;
 
@@ -107,9 +71,6 @@ function App() {
       renderer.setClearColor(bgColor, 1);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(window.devicePixelRatio || 1);
-
-      // init raycaster
-      const raycaster = new THREE.Raycaster();
 
       // init scene
       const scene = new THREE.Scene();
@@ -169,7 +130,6 @@ function App() {
 
         addMeshToScene(geometry, scene);
 
-        addTriangleHelperToScene(scene);
         console.log("Geometry Loaded", geometry);
       });
 
@@ -220,7 +180,6 @@ function App() {
         stats.end();
         requestAnimationFrame(animate);
         controls.update();
-        callbackRef.current();
       }
 
       // resize handler
@@ -237,9 +196,6 @@ function App() {
       // attach rendering canvas to DOM
       appElement.appendChild(renderer.domElement);
 
-      // define default render callback
-      callbackRef.current = () => {};
-
       // trigger animation
       animate();
 
@@ -248,69 +204,8 @@ function App() {
       cameraRef.current = camera;
       rendererRef.current = renderer;
       controlsRef.current = controls;
-      raycasterRef.current = raycaster;
-
-      // setup mouse event handlers
-      window.addEventListener("mousemove", onMouseMove);
     }
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-    };
   }, [observed]);
-
-  useEffect(() => {
-    const vertA = new THREE.Vector3();
-    const vertB = new THREE.Vector3();
-    const vertC = new THREE.Vector3();
-    if (currentTool === "pick") {
-      if (
-        raycasterRef.current &&
-        cameraRef.current &&
-        objectRef.current &&
-        helperRef.current
-      ) {
-        raycasterRef.current.setFromCamera(mousePos, cameraRef.current);
-        const intersections = raycasterRef.current.intersectObject(
-          objectRef.current,
-          true
-        );
-
-        if (intersections.length > 0) {
-          // show helper if got intersection
-          if (!helperRef.current.visible) helperRef.current.visible = true;
-
-          // get the intersected face index
-          const intersection = intersections[0];
-
-          const mesh = intersection.object as THREE.Mesh;
-          const faceIndex = intersection.faceIndex as number;
-
-          const positionAttr = (mesh.geometry as THREE.BufferGeometry)
-            .attributes.position as THREE.BufferAttribute;
-
-          vertA
-            .fromBufferAttribute(positionAttr, faceIndex * 3 + 0)
-            .applyMatrix4(mesh.matrixWorld);
-          vertB
-            .fromBufferAttribute(positionAttr, faceIndex * 3 + 1)
-            .applyMatrix4(mesh.matrixWorld);
-          vertC
-            .fromBufferAttribute(positionAttr, faceIndex * 3 + 2)
-            .applyMatrix4(mesh.matrixWorld);
-
-          // transform helper geometry to copy intersecting triangle's position and shape
-          helperRef.current.geometry.setFromPoints([vertA, vertB, vertC]);
-          const helperPositionAttr = (
-            helperRef.current.geometry as THREE.BufferGeometry
-          ).attributes.position as THREE.BufferAttribute;
-          helperPositionAttr.needsUpdate = true;
-        } else {
-          // hide helper if no intersection
-          if (helperRef.current.visible) helperRef.current.visible = false;
-        }
-      }
-    }
-  }, [mousePos, currentTool]);
 
   const tweenCamera = (orientation: Orientation) => {
     const { offsetFactor, axisAngle } = orientation;
@@ -345,21 +240,6 @@ function App() {
       quaternionTween.start();
     }
   };
-
-  useEffect(() => {
-    if (rotating) {
-      // start rotating object
-      callbackRef.current = () => {
-        if (objectRef.current) {
-          objectRef.current.rotation.x += 0.01;
-          objectRef.current.rotation.y += 0.01;
-        }
-      };
-    } else {
-      // stop rotating object
-      callbackRef.current = () => {};
-    }
-  }, [rotating]);
 
   const viewCubeControllerRef = useRef<ViewCubeController>();
 
