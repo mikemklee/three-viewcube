@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/three-viewcube/static/css/main.1e0821ca.css",
-    "main.js": "/three-viewcube/static/js/main.113af1fc.js",
+    "main.js": "/three-viewcube/static/js/main.576f51d2.js",
     "static/media/teapot.stl": "/three-viewcube/static/media/teapot.563859b6bd5a16c53d4d.stl",
     "index.html": "/three-viewcube/index.html",
     "main.1e0821ca.css.map": "/three-viewcube/static/css/main.1e0821ca.css.map",
-    "main.113af1fc.js.map": "/three-viewcube/static/js/main.113af1fc.js.map"
+    "main.576f51d2.js.map": "/three-viewcube/static/js/main.576f51d2.js.map"
   },
   "entrypoints": [
     "static/css/main.1e0821ca.css",
-    "static/js/main.113af1fc.js"
+    "static/js/main.576f51d2.js"
   ]
 }
