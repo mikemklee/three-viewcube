@@ -8,5 +8,5 @@
         "esModuleInterop": true
     },
     "include": ["./index.ts"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "demo"]
 }
