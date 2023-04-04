@@ -1,36 +1,39 @@
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-import { OrbitControls } from '@react-three/drei'
-import { Canvas, useLoader, useThree, useFrame } from '@react-three/fiber'
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
+import { OrbitControls } from "@react-three/drei";
+import { Canvas, useLoader, useThree, useFrame } from "@react-three/fiber";
 
-import ViewCubeController from 'three-viewcube';
+import ViewCubeController from "three-viewcube";
 
+import { useEffect, useRef } from "react";
 
-import { useEffect } from 'react';
-
-import './App.css';
-
+import "./App.css";
 
 function useModel() {
-  const stl = useLoader(STLLoader, '/teapot.stl')
-  console.log('loaded stl', stl)
+  const stl = useLoader(STLLoader, "/teapot.stl");
+  console.log("loaded stl", stl);
   return stl;
 }
 
 function Scene() {
   const { camera } = useThree();
-
+  const vcControllerRef = useRef();
 
   useEffect(() => {
-    const viewCubeController = new ViewCubeController(camera);
-
-    console.log('initialized viewCubeController', viewCubeController)
-
+    vcControllerRef.current = new ViewCubeController(
+      camera
+    );
   }, [camera]);
 
   const stl = useModel();
 
+  useFrame((state, delta, xrFrame) => {
+    if (vcControllerRef.current) {
+      vcControllerRef.current.tweenCallback();
+    }
+  });
+
   return (
-    <mesh position={[0, -3, 0]} rotation={[Math.PI / -2, 0, 0]} >
+    <mesh position={[0, -3, 0]} rotation={[Math.PI / -2, 0, 0]}>
       <primitive object={stl} scale={0.01} />
       <meshStandardMaterial color="hotpink" />
     </mesh>
