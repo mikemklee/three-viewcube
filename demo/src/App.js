@@ -1,42 +1,49 @@
-import { Canvas } from '@react-three/fiber'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { OrbitControls } from '@react-three/drei'
+import { Canvas, useLoader, useThree, useFrame } from '@react-three/fiber'
 
 import ViewCubeController from 'three-viewcube';
 
-import { useThree, useFrame, useRef } from '@react-three/fiber';
 
 import { useEffect } from 'react';
 
 import './App.css';
 
-function useViewCubeController() {
-  const ref = useRef()
-  const { camera, gl } = useThree();
 
-  useEffect(() => {
-    const viewCubeController = new ViewCubeController(camera, gl.domElement);
-    console.log('finished setting up view cube controller')
-  }, [camera, gl]);
+function useModel() {
+  const stl = useLoader(STLLoader, '/teapot.stl')
+  console.log('loaded stl', stl)
+  return stl;
 }
 
+function Scene() {
+  const { camera } = useThree();
 
-function Setup() {
-  useViewCubeController();
-  console.log('we  here?')
 
+  useEffect(() => {
+    const viewCubeController = new ViewCubeController(camera);
+
+    console.log('initialized viewCubeController', viewCubeController)
+
+  }, [camera]);
+
+  const stl = useModel();
+
+  return (
+    <mesh position={[0, -3, 0]} rotation={[Math.PI / -2, 0, 0]} >
+      <primitive object={stl} scale={0.01} />
+      <meshStandardMaterial color="hotpink" />
+    </mesh>
+  );
 }
 
 function App() {
   return (
     <div id="canvas-container">
-      <Canvas>
-        <Setup />
+      <Canvas camera={{ position: [-5, 5, 5], zoom: 40 }} orthographic>
+        <Scene />
         <ambientLight intensity={0.1} />
         <directionalLight color="red" position={[0, 0, 5]} />
-        <mesh>
-          <boxGeometry />
-          <meshStandardMaterial />
-        </mesh>
         <OrbitControls />
       </Canvas>
     </div>
