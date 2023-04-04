@@ -22,6 +22,9 @@
     "url": "https://github.com/mikemklee/three-viewcube/issues"
   },
   "homepage": "https://github.com/mikemklee/three-viewcube#readme",
+  "publishConfig": {
+    "@mikemklee:registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@types/three": "^0.150.1",
     "typescript": "^5.0.3"
