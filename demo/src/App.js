@@ -3,8 +3,7 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useLoader, useThree, useFrame } from "@react-three/fiber";
 
-// import ViewCubeController from "three-viewcube";
-import ViewCubeController from "./index.ts";
+import ViewCubeController from "three-viewcube";
 
 import { useEffect, useRef } from "react";
 
@@ -54,7 +53,6 @@ function Scene({ viewCubeControllerRef }) {
 
   const stl = useModel();
 
-
   let cube = document.querySelector(".cube");
   const mat = new THREE.Matrix4();
 
@@ -87,14 +85,17 @@ function App() {
   return (
     <div id="canvas-container">
       <Canvas camera={{
-        position: [10, 20, 20], zoom: 40, left:
-          -window.innerWidth / 2, right: window.innerWidth / 2, top:
-          window.innerHeight / 2, bottom: -window.innerHeight / 2,
+        position: [10, 20, 20],
+        zoom: 40,
+        left: -window.innerWidth / 2,
+        right: window.innerWidth / 2,
+        top: window.innerHeight / 2,
+        bottom: -window.innerHeight / 2,
       }} orthographic>
         <Scene viewCubeControllerRef={vcControllerRef} />
         <ambientLight intensity={0.1} />
         <directionalLight color="red" position={[0, 0, 5]} />
-        <OrbitControls />
+        <OrbitControls enableDamping={false} />
       </Canvas>
 
       <div id="viewcube-container">
