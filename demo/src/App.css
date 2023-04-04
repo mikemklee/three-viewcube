@@ -5,6 +5,7 @@
 #canvas-container {
   height: 100%;
   width: 100%;
+  background: #ddd;
 }
 
 .App-logo {
@@ -46,10 +47,10 @@
   width: 120px;
   height: 120px;
   margin: 10px;
-  perspective: 400px;
+  perspective: 600px;
   position: absolute;
-  right: 40px;
-  bottom: 20px;
+  right: 60px;
+  bottom: 40px;
   z-index: 2;
 }
 
@@ -68,19 +69,19 @@
   position: absolute;
   width: 120px;
   height: 120px;
-  border: 2px solid #7d7d7d;
+  border: 2px solid #808080;
   line-height: 100px;
   font-size: 25px;
   font-weight: bold;
   color: #7d7d7d;
   text-align: center;
-  background: #ddd;
+  background: #fff;
   transition: all 0.1s;
   cursor: pointer;
   user-select: none;
 }
 .cube__face:hover {
-  background: #7d7d7d;
+  background: #adadad;
   color: #fff;
 }
 

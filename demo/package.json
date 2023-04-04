@@ -12,7 +12,8 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "three": "^0.151.3",
-    "three-viewcube": "^0.0.2",
+    "@tweenjs/tween.js": "^19.0.0",
+    "three-viewcube": "0.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
