@@ -7,22 +7,12 @@ export type Orientation = {
     y: number;
     z: number;
   };
-  axisAngle: {
-    x: number;
-    y: number;
-    z: number;
-  };
 };
 
 const TOP: Orientation = {
   offsetFactor: {
     x: 0,
-    y: 0,
-    z: 1,
-  },
-  axisAngle: {
-    x: 0,
-    y: 0,
+    y: 1,
     z: 0,
   },
 };
@@ -30,12 +20,7 @@ const TOP: Orientation = {
 const BOTTOM: Orientation = {
   offsetFactor: {
     x: 0,
-    y: 0,
-    z: -1,
-  },
-  axisAngle: {
-    x: Math.PI,
-    y: 0,
+    y: -1,
     z: 0,
   },
 };
@@ -43,26 +28,16 @@ const BOTTOM: Orientation = {
 const FRONT: Orientation = {
   offsetFactor: {
     x: 0,
-    y: -1,
-    z: 0,
-  },
-  axisAngle: {
-    x: Math.PI / 2,
     y: 0,
-    z: 0,
+    z: 1,
   },
 };
 
 const BACK: Orientation = {
   offsetFactor: {
     x: 0,
-    y: 1,
-    z: 0,
-  },
-  axisAngle: {
-    x: -(Math.PI / 2),
     y: 0,
-    z: Math.PI,
+    z: -1,
   },
 };
 
@@ -72,22 +47,12 @@ const LEFT: Orientation = {
     y: 0,
     z: 0,
   },
-  axisAngle: {
-    x: Math.PI / 2,
-    y: -(Math.PI / 2),
-    z: 0,
-  },
 };
 
 const RIGHT: Orientation = {
   offsetFactor: {
     x: 1,
     y: 0,
-    z: 0,
-  },
-  axisAngle: {
-    x: Math.PI / 2,
-    y: Math.PI / 2,
     z: 0,
   },
 };
@@ -112,17 +77,15 @@ class ViewCubeController {
   };
 
   private camera: THREE.Camera;
-  private object: THREE.Object3D;
 
-  constructor(camera: THREE.Camera, object: THREE.Object3D) {
+  constructor(camera: THREE.Camera) {
     this.camera = camera;
-    this.object = object;
   }
 
   tweenCamera(orientation: Orientation) {
-    const { offsetFactor, axisAngle } = orientation;
+    const { offsetFactor } = orientation;
 
-    if (this.camera && this.object) {
+    if (this.camera) {
       const offsetUnit = this.camera.position.length();
       const offset = new THREE.Vector3(
         offsetUnit * offsetFactor.x,
@@ -133,23 +96,18 @@ class ViewCubeController {
       const center = new THREE.Vector3();
       const finishPosition = center.add(offset);
 
+      // The target position the camera should always look at
+      const targetPosition = new THREE.Vector3(0, 0, 0);
+
       const positionTween = new TWEEN.Tween(this.camera.position)
         .to(finishPosition, 300)
-        .easing(TWEEN.Easing.Circular.Out);
-
-      const euler = new THREE.Euler(axisAngle.x, axisAngle.y, axisAngle.z);
-
-      // Rotate camera too!
-      const finishQuaternion = new THREE.Quaternion()
-        .copy(this.camera.quaternion)
-        .setFromEuler(euler);
-
-      const quaternionTween = new TWEEN.Tween(this.camera.quaternion)
-        .to(finishQuaternion, 300)
-        .easing(TWEEN.Easing.Circular.Out);
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => {
+          // Update the camera rotation to look at the target position
+          this.camera.lookAt(targetPosition);
+        });
 
       positionTween.start();
-      quaternionTween.start();
     }
   }
 
