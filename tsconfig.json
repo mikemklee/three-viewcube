@@ -5,7 +5,8 @@
         "declaration": true,
         "outDir": "./dist",
         "strict": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "moduleResolution":"nodenext"
     },
     "include": ["./index.ts"],
     "exclude": ["node_modules", "demo"]
