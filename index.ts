@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 
 export type Orientation = {
@@ -87,17 +87,17 @@ class ViewCubeController {
 
     if (this.camera) {
       const offsetUnit = this.camera.position.length();
-      const offset = new THREE.Vector3(
+      const offset = new Vector3(
         offsetUnit * offsetFactor.x,
         offsetUnit * offsetFactor.y,
         offsetUnit * offsetFactor.z
       );
 
-      const center = new THREE.Vector3();
+      const center = new Vector3();
       const finishPosition = center.add(offset);
 
       // The target position the camera should always look at
-      const targetPosition = new THREE.Vector3(0, 0, 0);
+      const targetPosition = new Vector3(0, 0, 0);
 
       const positionTween = new TWEEN.Tween(this.camera.position)
         .to(finishPosition, 300)
