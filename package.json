@@ -1,6 +1,6 @@
 {
   "name": "three-viewcube",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Controls for 3D orientation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
