@@ -1,6 +1,6 @@
 {
   "name": "three-viewcube",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Controls for 3D orientation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/mikemklee/three-viewcube#readme",
   "publishConfig": {
-    "@mikemklee:registry": "https://npm.pkg.github.com"
+    "@mikemklee:registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
     "@types/three": "^0.150.1",
