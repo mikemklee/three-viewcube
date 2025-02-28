@@ -6,7 +6,7 @@
         "outDir": "./dist",
         "strict": true,
         "esModuleInterop": true,
-        "moduleResolution":"nodenext"
+        "moduleResolution": "bundler"
     },
     "include": ["./index.ts"],
     "exclude": ["node_modules", "demo"]

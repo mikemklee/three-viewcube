@@ -26,11 +26,12 @@
     "@mikemklee:registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
-    "@types/three": "^0.150.1",
+    "@types/three": "^0.150.2",
+    "three": "^0.174.0",
     "typescript": "^5.0.3"
   },
   "peerDependencies": {
-    "three": "^0.151.3",
-    "@tweenjs/tween.js": "^19.0.0"
+    "@tweenjs/tween.js": "^19.0.0",
+    "three": "^0.174.0"
   }
 }
